@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSEB Hybrid ML-SCADA Fault Detection System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-left">
+            <div class="kseb-logo">KSEB</div>
+            <h1 class="system-title">Hybrid ML-SCADA Fault Detection System</h1>
+        </div>
+        <div class="header-right">
+            <div class="system-clock" id="systemClock"></div>
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="status-label">SCADA:</span>
+                    <span class="status-value online" id="scadaStatus">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">ML Engine:</span>
+                    <span class="status-value active" id="mlStatus">ACTIVE</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="navigation">
+        <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-btn" data-tab="topology">Network Topology</button>
+        <button class="nav-btn" data-tab="analytics">ML Analytics</button>
+        <button class="nav-btn" data-tab="historical">Historical Data</button>
+        <button class="nav-btn" data-tab="alerts">Alerts</button>
+        <button class="nav-btn" data-tab="settings">System Settings</button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Dashboard Tab -->
+        <section class="tab-content active" id="dashboard">
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">System Uptime</div>
+                    <div class="kpi-value" id="systemUptime">45d 12h</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Feeders</div>
+                    <div class="kpi-value" id="totalFeeders">10</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Active Alarms</div>
+                    <div class="kpi-value critical" id="activeAlarms">3</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">ML Accuracy</div>
+                    <div class="kpi-value" id="mlAccuracy">99.87%</div>
+                </div>
+            </div>
+
+            <!-- Grid Status Overview -->
+            <div class="dashboard-grid">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h3>Real-Time Feeder Status</h3>
+                        <button class="btn btn--sm btn--secondary" id="refreshData">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="feeder-table-container">
+                            <table class="feeder-table" id="feederTable">
+                                <thead>
+                                    <tr>
+                                        <th>Feeder ID</th>
+                                        <th>Name</th>
+                                        <th>Voltage (V)</th>
+                                        <th>Current (A)</th>
+                                        <th>Power (MW)</th>
+                                        <th>Temperature (°C)</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feederTableBody">
+                                    <!-- Feeder data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trend Charts -->
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h3>Real-Time Trends</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 300px; position: relative;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alarms Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Active Alarms</h3>
+                </div>
+                <div class="card-body">
+                    <div id="alarmsContainer"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Network Topology Tab -->
+        <section class="tab-content" id="topology">
+            <div class="card">
+                <div class="card-header">
+                    <h3>SCADA Network Topology</h3>
+                    <div class="topology-controls">
+                        <button class="btn btn--sm btn--secondary" id="zoomIn">Zoom In</button>
+                        <button class="btn btn--sm btn--secondary" id="zoomOut">Zoom Out</button>
+                        <button class="btn btn--sm btn--outline" id="resetView">Reset View</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="topology-container" id="topologyContainer">
+                        <!-- Network diagram will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ML Analytics Tab -->
+        <section class="tab-content" id="analytics">
+            <div class="analytics-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>ML Model Performance</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <span class="metric-label">Accuracy</span>
+                                <span class="metric-value">99.87%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Precision</span>
+                                <span class="metric-value">98.4%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Recall</span>
+                                <span class="metric-value">97.2%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">F1-Score</span>
+                                <span class="metric-value">97.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Fault Prediction Engine</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="predictionResults">
+                            <!-- ML predictions will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Fault Classification</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="fault-types-grid" id="faultTypesGrid">
+                            <!-- Fault types will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Historical Data Tab -->
+        <section class="tab-content" id="historical">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Historical Analysis</h3>
+                    <div class="date-controls">
+                        <input type="date" class="form-control" id="startDate" value="2025-09-21">
+                        <span>to</span>
+                        <input type="date" class="form-control" id="endDate" value="2025-09-28">
+                        <button class="btn btn--primary" id="loadHistorical">Load Data</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 400px; position: relative;">
+                        <canvas id="historicalChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts Tab -->
+        <section class="tab-content" id="alerts">
+            <div class="alerts-layout">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Alarm Management</h3>
+                        <div class="alarm-controls">
+                            <button class="btn btn--sm btn--secondary" id="acknowledgeAll">Acknowledge All</button>
+                            <button class="btn btn--sm btn--outline" id="clearAlarms">Clear Resolved</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="detailedAlarms"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Tab -->
+        <section class="tab-content" id="settings">
+            <div class="settings-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>System Configuration</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Alarm Threshold (Voltage)</label>
+                            <input type="number" class="form-control" value="10500" min="9000" max="12000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ML Prediction Interval (seconds)</label>
+                            <input type="number" class="form-control" value="30" min="10" max="300">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Temperature Warning Threshold (°C)</label>
+                            <input type="number" class="form-control" value="40" min="30" max="80">
+                        </div>
+                        <button class="btn btn--primary">Save Configuration</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>User Management</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="user-roles">
+                            <div class="role-item">
+                                <span class="role-name">Current User: Control Engineer</span>
+                                <span class="status success">Authenticated</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Access Level: Full Control</span>
+                                <span class="status info">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Control Modal -->
+    <div class="modal hidden" id="controlModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Control Confirmation</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="controlMessage"></p>
+                <div class="control-warning">
+                    <strong>⚠️ Warning:</strong> This action will affect power supply to customers.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" id="cancelControl">Cancel</button>
+                <button class="btn btn--primary" id="confirmControl">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

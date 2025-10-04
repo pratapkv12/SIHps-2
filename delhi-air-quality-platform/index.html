@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirSense Delhi - Air Quality Monitoring Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <h1>AirSense Delhi</h1>
+                        <span class="tagline">Real-time Air Quality Monitoring</span>
+                    </div>
+                    <div class="current-time" id="currentTime"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <div class="container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="citizen">Citizen Dashboard</button>
+                    <button class="tab-btn" data-tab="policy">Policy Dashboard</button>
+                    <button class="tab-btn" data-tab="analytics">Data Analytics</button>
+                    <button class="tab-btn" data-tab="health">Health Advisor</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Citizen Dashboard -->
+                <div class="tab-content active" id="citizen-tab">
+                    <div class="dashboard-grid">
+                        <!-- Current AQI Section -->
+                        <div class="aqi-hero-card">
+                            <h2>Current Air Quality</h2>
+                            <div class="aqi-display">
+                                <div class="aqi-number" id="currentAQI">156</div>
+                                <div class="aqi-status" id="aqiStatus">Unhealthy for Sensitive Groups</div>
+                                <div class="aqi-location">📍 Delhi-NCR</div>
+                            </div>
+                            <div class="pollutant-info">
+                                <div class="pollutant-item">
+                                    <span>PM2.5</span>
+                                    <span id="pm25Value">89 μg/m³</span>
+                                </div>
+                                <div class="pollutant-item">
+                                    <span>PM10</span>
+                                    <span id="pm10Value">134 μg/m³</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 24-Hour Forecast -->
+                        <div class="card">
+                            <h3>24-Hour AQI Forecast</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="forecastChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Map -->
+                        <div class="card">
+                            <h3>Station-wise Air Quality</h3>
+                            <div id="airQualityMap" style="height: 300px; border-radius: var(--radius-base);"></div>
+                        </div>
+
+                        <!-- Health Recommendations -->
+                        <div class="card">
+                            <h3>Health Recommendations</h3>
+                            <div class="health-alerts">
+                                <div class="alert alert-warning">
+                                    <strong>⚠️ Sensitive Group Alert</strong>
+                                    <p>Current AQI levels may cause health issues for sensitive individuals</p>
+                                </div>
+                                <ul class="recommendations" id="healthRecommendations">
+                                    <li>Limit outdoor activities during peak hours</li>
+                                    <li>Use N95 masks when outdoors</li>
+                                    <li>Keep windows closed</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Clean Routes -->
+                        <div class="card">
+                            <h3>Clean Route Recommendations</h3>
+                            <div class="route-list" id="cleanRoutes">
+                                <!-- Routes will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Policy Dashboard -->
+                <div class="tab-content" id="policy-tab">
+                    <div class="dashboard-grid">
+                        <!-- Source Contribution -->
+                        <div class="card">
+                            <h3>Pollution Source Breakdown</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="sourceChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- GRAP Interventions -->
+                        <div class="card">
+                            <h3>Active Policy Interventions</h3>
+                            <div class="intervention-list" id="policyInterventions">
+                                <!-- Interventions will be populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Policy Effectiveness -->
+                        <div class="card">
+                            <h3>Intervention Effectiveness</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="effectivenessChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Hotspot Map -->
+                        <div class="card">
+                            <h3>Pollution Hotspots</h3>
+                            <div id="hotspotMap" style="height: 300px; border-radius: var(--radius-base);"></div>
+                        </div>
+
+                        <!-- AI Recommendations -->
+                        <div class="card">
+                            <h3>AI Policy Recommendations</h3>
+                            <div class="ai-recommendations">
+                                <div class="recommendation-item">
+                                    <div class="rec-priority high">High Priority</div>
+                                    <h4>Implement Emergency Measures</h4>
+                                    <p>Consider activating GRAP Stage III due to sustained poor air quality</p>
+                                </div>
+                                <div class="recommendation-item">
+                                    <div class="rec-priority medium">Medium Priority</div>
+                                    <h4>Enhance Dust Control</h4>
+                                    <p>Increase water sprinkling frequency on major roads</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Analytics -->
+                <div class="tab-content" id="analytics-tab">
+                    <div class="dashboard-grid">
+                        <!-- Trend Analysis -->
+                        <div class="card">
+                            <h3>Historical Trends</h3>
+                            <div class="chart-controls">
+                                <select id="timeRange" class="form-control">
+                                    <option value="7d">Last 7 Days</option>
+                                    <option value="30d">Last 30 Days</option>
+                                    <option value="90d">Last 3 Months</option>
+                                    <option value="1y">Last Year</option>
+                                </select>
+                            </div>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Station Comparison -->
+                        <div class="card">
+                            <h3>Station-wise Comparison</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="stationChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Seasonal Patterns -->
+                        <div class="card">
+                            <h3>Seasonal Analysis</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="seasonalChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Weather Correlation -->
+                        <div class="card">
+                            <h3>Weather Impact Analysis</h3>
+                            <div class="weather-correlation">
+                                <div class="weather-item">
+                                    <span>Temperature</span>
+                                    <span>28°C</span>
+                                    <div class="correlation">Moderate Impact</div>
+                                </div>
+                                <div class="weather-item">
+                                    <span>Humidity</span>
+                                    <span>72%</span>
+                                    <div class="correlation">High Impact</div>
+                                </div>
+                                <div class="weather-item">
+                                    <span>Wind Speed</span>
+                                    <span>6 km/h</span>
+                                    <div class="correlation">Low Impact</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Export Data -->
+                        <div class="card">
+                            <h3>Data Export</h3>
+                            <div class="export-options">
+                                <button class="btn btn--secondary" id="exportCSV">📊 Export CSV</button>
+                                <button class="btn btn--secondary" id="exportPDF">📄 Export PDF Report</button>
+                                <button class="btn btn--secondary" id="shareData">📤 Share Data</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Advisor -->
+                <div class="tab-content" id="health-tab">
+                    <div class="dashboard-grid">
+                        <!-- Personal Health Profile -->
+                        <div class="card">
+                            <h3>Personal Health Profile</h3>
+                            <div class="health-profile">
+                                <div class="profile-selector">
+                                    <label class="form-label">Select your profile:</label>
+                                    <select id="healthProfile" class="form-control">
+                                        <option value="general">General Population</option>
+                                        <option value="sensitive">Sensitive Individual</option>
+                                        <option value="children">Children</option>
+                                        <option value="elderly">Elderly</option>
+                                        <option value="asthma">Asthma Patient</option>
+                                    </select>
+                                </div>
+                                <div class="health-status" id="healthStatus">
+                                    <div class="status-indicator moderate">Moderate Risk</div>
+                                    <p>Based on current AQI levels and your profile</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Recommendations -->
+                        <div class="card">
+                            <h3>Activity Recommendations</h3>
+                            <div class="activity-grid" id="activityRecommendations">
+                                <!-- Activities will be populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Protective Measures -->
+                        <div class="card">
+                            <h3>Protective Measures</h3>
+                            <div class="protective-measures">
+                                <div class="measure-item">
+                                    <div class="measure-icon">😷</div>
+                                    <div class="measure-content">
+                                        <h4>Mask Recommendation</h4>
+                                        <p><strong>N95 or N99 masks</strong> recommended for outdoor activities</p>
+                                    </div>
+                                </div>
+                                <div class="measure-item">
+                                    <div class="measure-icon">🌬️</div>
+                                    <div class="measure-content">
+                                        <h4>Air Purifier</h4>
+                                        <p><strong>HEPA filter</strong> recommended for indoor spaces</p>
+                                    </div>
+                                </div>
+                                <div class="measure-item">
+                                    <div class="measure-icon">🏠</div>
+                                    <div class="measure-content">
+                                        <h4>Indoor Environment</h4>
+                                        <p><strong>Keep windows closed</strong> during high pollution hours</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Health Insights -->
+                        <div class="card">
+                            <h3>Health Insights</h3>
+                            <div class="chart-container" style="position: relative; height: 250px;">
+                                <canvas id="healthChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Contacts -->
+                        <div class="card">
+                            <h3>Emergency Contacts</h3>
+                            <div class="emergency-contacts">
+                                <div class="contact-item">
+                                    <strong>Delhi Pollution Control Board</strong>
+                                    <span>📞 011-2652-8715</span>
+                                </div>
+                                <div class="contact-item">
+                                    <strong>Emergency Medical Services</strong>
+                                    <span>📞 102</span>
+                                </div>
+                                <div class="contact-item">
+                                    <strong>Air Quality Helpline</strong>
+                                    <span>📞 1800-11-2345</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Updating air quality data...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
