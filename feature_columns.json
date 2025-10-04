@@ -1,0 +1,1 @@
+["pm2_5", "pm10", "no2", "so2", "co", "o3", "temperature", "humidity", "wind_speed", "hour", "day_of_week", "month", "is_weekend", "is_rush_hour", "is_winter", "pm2_5_lag1", "pm10_lag1", "aqi_lag1", "station_Anand Vihar", "station_IGI Airport", "station_Mandir Marg", "station_Punjabi Bagh", "station_R.K. Puram"]
